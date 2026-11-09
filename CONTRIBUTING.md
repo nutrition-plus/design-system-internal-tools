@@ -13,7 +13,7 @@ bun run tokens && bun test && bun run typecheck && bun run lint && bun run test:
 ```
 
 6. บันทึกใน `CHANGELOG.md` และระบุระดับเวอร์ชัน (major / minor / patch)
-7. รีวิวโดย design 1 คน + frontend 1 คน
+7. ตรวจทานการเปลี่ยนแปลงด้วยตัวเองก่อน merge; ขอรีวิวจาก design หรือ frontend เมื่อมีผู้ร่วมงาน
 
 ห้ามใช้ข้อมูลลูกค้าจริงใน stories หรือ fixtures
 
@@ -23,10 +23,10 @@ bun run tokens && bun test && bun run typecheck && bun run lint && bun run test:
 
 A pull request can merge when:
 - the `verify` check passes (tokens up to date, `bun test`, typecheck, lint, story tests with accessibility checks, Storybook and registry builds),
-- it has 1 approving review (the Governance guide asks for one design and one frontend reviewer; the ruleset enforces 1 approval until a CODEOWNERS file is added and `require_code_owner_review` is switched on), and
+- no approving review is required, and
 - all review conversations are resolved and the branch is up to date with `main`.
 
-The checks live in `.github/workflows/ci.yml`. They only verify; nothing is deployed automatically.
+The checks live in `.github/workflows/ci.yml`. After a merge to `main`, `.github/workflows/pages.yml` deploys Storybook publicly to GitHub Pages.
 
 ### Release
 Pushing a tag `vX.Y.Z` runs `.github/workflows/release.yml`. It runs the same `verify` checks, stops if the tag does not match `version` in `package.json`, and creates a GitHub Release using the matching section of `CHANGELOG.md` as the notes. Consumers install from that tag. Before tagging, make sure `package.json` and `CHANGELOG.md` already have the new version on `main`.
