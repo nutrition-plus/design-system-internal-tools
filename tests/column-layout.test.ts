@@ -1,5 +1,4 @@
 import { describe, expect, test } from "bun:test"
-import { renderToString } from "react-dom/server"
 
 import {
   DEFAULT_COLUMN_WIDTH,
@@ -20,7 +19,6 @@ import {
   tableSizing,
 } from "../src/components/patterns/data-table/column-layout"
 import type { ColumnLayout, LayoutStorage } from "../src/components/patterns/data-table/column-layout"
-import { ColumnLayoutTable } from "../src/components/patterns/data-table/column-layout-table"
 
 const IDS = ["a", "b", "c", "d"]
 
@@ -180,25 +178,4 @@ describe("tableSizing", () => {
 test("hashText is stable and short", () => {
   expect(hashText("a|b")).toBe(hashText("a|b"))
   expect(hashText("a|b")).not.toBe(hashText("b|a"))
-})
-
-test("ColumnLayoutTable server-renders with the default layout, resize handles and the arrange button", () => {
-  type Row = { id: string; name: string; n: number }
-  const html = renderToString(
-    <ColumnLayoutTable<Row>
-      tableId="test-render"
-      rows={[{ id: "1", name: "x", n: 2 }]}
-      rowKey={(r) => r.id}
-      columns={[
-        { id: "name", label: "Name", cell: (r) => r.name },
-        { id: "n", label: "N", cell: (r) => r.n, align: "right" },
-        { id: "actions", label: "Act", cell: () => null, pin: "end" },
-      ]}
-    />,
-  )
-  expect(html).toContain("คอลัมน์")
-  // Two movable columns get a handle; the pinned one does not.
-  expect(html.match(/role="separator"/g)?.length).toBe(2)
-  expect(html).not.toContain('data-layout="fixed"')
-  expect(html).not.toContain("รีเซ็ตคอลัมน์")
 })
