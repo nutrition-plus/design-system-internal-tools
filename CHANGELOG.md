@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.1 — 2026-11-10
+
+### Fixed
+- `AppShell`: when the sidebar is collapsed to the icon rail on desktop, a nav item with `children` now opens a menu to the right of its icon, so the sub-items can still be chosen. Before, the sub-items were hidden and tapping the icon did nothing visible. The expanded sidebar and the mobile Sheet are unchanged.
+
 ## 0.4.0 — 2026-11-10
 
 ### Added

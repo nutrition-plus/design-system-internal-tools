@@ -15,6 +15,13 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -159,6 +166,117 @@ function SidebarToggle() {
   )
 }
 
+function NavCount({ count }: { count?: number }) {
+  if (count === undefined) return null
+  return (
+    <span className="ml-auto text-xs text-muted-foreground tabular-nums">
+      {count.toLocaleString("th-TH")}
+    </span>
+  )
+}
+
+/**
+ * A nav item with sub-items. Expanded sidebar: it opens and closes in place. Collapsed to the icon rail
+ * (desktop): the sub-items are hidden by the sidebar, so the icon opens a menu to its right instead.
+ */
+function NavGroupItem({ item }: { item: NavItem }) {
+  const { state, isMobile } = useSidebar()
+  const children = item.children ?? []
+  const isActive = !!item.active || children.some((c) => c.active)
+
+  if (state === "collapsed" && !isMobile) {
+    return (
+      <SidebarMenuItem>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <SidebarMenuButton
+              tooltip={item.title}
+              isActive={isActive}
+              aria-label={item.title}
+              className={MENU_ITEM}
+            >
+              <item.icon />
+              <span>{item.title}</span>
+            </SidebarMenuButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            side="right"
+            align="start"
+            sideOffset={8}
+            className="min-w-52"
+          >
+            <DropdownMenuLabel>{item.title}</DropdownMenuLabel>
+            {children.map((child) => (
+              <DropdownMenuItem
+                key={child.href}
+                asChild
+                className={cn(
+                  "min-h-11",
+                  child.active && "font-semibold text-primary"
+                )}
+              >
+                <a
+                  href={child.href}
+                  aria-current={child.active ? "page" : undefined}
+                >
+                  <span>{child.title}</span>
+                  <NavCount count={child.count} />
+                </a>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </SidebarMenuItem>
+    )
+  }
+
+  return (
+    <Collapsible asChild defaultOpen={isActive} className="group/collapsible">
+      <SidebarMenuItem>
+        <CollapsibleTrigger asChild>
+          <SidebarMenuButton
+            tooltip={item.title}
+            className={cn(MENU_ITEM, isActive && "font-semibold")}
+          >
+            <item.icon />
+            <span>{item.title}</span>
+            <ChevronDownIcon className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-180" />
+          </SidebarMenuButton>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <SidebarMenuSub className="gap-0.5 py-1">
+            {children.map((child) => (
+              <SidebarMenuSubItem key={child.href} className="relative">
+                {/* dot sitting on the vertical guide line */}
+                <span
+                  aria-hidden
+                  className={cn(
+                    "absolute top-1/2 -left-[13.5px] size-1.5 -translate-y-1/2 rounded-full",
+                    child.active ? "bg-primary" : "bg-border"
+                  )}
+                />
+                <SidebarMenuSubButton
+                  asChild
+                  isActive={child.active}
+                  className={MENU_ITEM}
+                >
+                  <a
+                    href={child.href}
+                    aria-current={child.active ? "page" : undefined}
+                  >
+                    <span>{child.title}</span>
+                    <NavCount count={child.count} />
+                  </a>
+                </SidebarMenuSubButton>
+              </SidebarMenuSubItem>
+            ))}
+          </SidebarMenuSub>
+        </CollapsibleContent>
+      </SidebarMenuItem>
+    </Collapsible>
+  )
+}
+
 /**
  * SidebarInset renders the page's <main> landmark, so children must not add another one.
  * Standard layout: collapsible sidebar (Sheet on < 768px) with the brand and collapse button at the top,
@@ -192,70 +310,7 @@ function AppShell({
                 <SidebarMenu>
                   {group.items.map((item) =>
                     item.children?.length ? (
-                      <Collapsible
-                        key={item.href}
-                        asChild
-                        defaultOpen={
-                          item.active || item.children.some((c) => c.active)
-                        }
-                        className="group/collapsible"
-                      >
-                        <SidebarMenuItem>
-                          <CollapsibleTrigger asChild>
-                            <SidebarMenuButton
-                              tooltip={item.title}
-                              className={cn(
-                                MENU_ITEM,
-                                (item.active ||
-                                  item.children.some((c) => c.active)) &&
-                                  "font-semibold"
-                              )}
-                            >
-                              <item.icon />
-                              <span>{item.title}</span>
-                              <ChevronDownIcon className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-180" />
-                            </SidebarMenuButton>
-                          </CollapsibleTrigger>
-                          <CollapsibleContent>
-                            <SidebarMenuSub className="gap-0.5 py-1">
-                              {item.children.map((child) => (
-                                <SidebarMenuSubItem
-                                  key={child.href}
-                                  className="relative"
-                                >
-                                  {/* dot sitting on the vertical guide line */}
-                                  <span
-                                    aria-hidden
-                                    className={cn(
-                                      "absolute top-1/2 -left-[13.5px] size-1.5 -translate-y-1/2 rounded-full",
-                                      child.active ? "bg-primary" : "bg-border"
-                                    )}
-                                  />
-                                  <SidebarMenuSubButton
-                                    asChild
-                                    isActive={child.active}
-                                    className={MENU_ITEM}
-                                  >
-                                    <a
-                                      href={child.href}
-                                      aria-current={
-                                        child.active ? "page" : undefined
-                                      }
-                                    >
-                                      <span>{child.title}</span>
-                                      {child.count !== undefined && (
-                                        <span className="ml-auto text-xs text-muted-foreground tabular-nums">
-                                          {child.count.toLocaleString("th-TH")}
-                                        </span>
-                                      )}
-                                    </a>
-                                  </SidebarMenuSubButton>
-                                </SidebarMenuSubItem>
-                              ))}
-                            </SidebarMenuSub>
-                          </CollapsibleContent>
-                        </SidebarMenuItem>
-                      </Collapsible>
+                      <NavGroupItem key={item.href} item={item} />
                     ) : (
                       <SidebarMenuItem key={item.href}>
                         <SidebarMenuButton
