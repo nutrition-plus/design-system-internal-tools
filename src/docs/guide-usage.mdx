@@ -14,7 +14,7 @@ import { Meta } from "@storybook/addon-docs/blocks"
 repo นี้เป็น private ใช้ภายในเท่านั้น ผู้ติดตั้งต้องมีสิทธิ์อ่าน repo (ขอได้จากทีม Design System) และตั้ง SSH key กับ GitHub ไว้แล้ว
 
 ```bash
-bun add git+ssh://git@github.com/Nutrition-Plus/design-system-internal-tools.git#v0.3.2
+bun add git+ssh://git@github.com/Nutrition-Plus/design-system-internal-tools.git#v0.4.0
 ```
 
 แล้วตั้งค่า CSS หลัก (ไฟล์ที่มี `@import "tailwindcss"`):
@@ -92,6 +92,16 @@ registry.json                 → bun run registry:build → public/r/*.json
 | Tokens, primitives, patterns | repo นี้ (registry `@moove`) | ทีม Design System |
 | Domain components (เช่น WorkStatusBadge, BlockerBadge) | repo ของแต่ละระบบ `src/components/domain/` | ทีมระบบนั้น |
 | Feature screens | repo ของแต่ละระบบ | ทีมระบบนั้น |
+
+แพ็กเกจมี `StatusBadge`, `BlockerBadge`, `PhoneText` และ `ReasonDialog` เป็น pattern กลางให้ประกอบ โดยระบบปลายทางกำหนดข้อความและ mapping ของสถานะหรือ blocker เอง `PhoneText` แสดงค่าตามที่ส่งมาโดยไม่ mask: การจำกัดสิทธิ์และ mask เบอร์ต้องทำที่ server ก่อนส่งให้ client ส่วน `ReasonDialog` ต้องกรอกเหตุผล และเมื่อ `onConfirm` ล้มเหลวจะเก็บข้อความไว้ให้ลองใหม่ (ผู้เรียกแสดง error เอง)
+
+```tsx
+import { BlockerBadge, PhoneText, StatusBadge } from "@moove/design-system"
+
+<StatusBadge variant="warning">รอตรวจสอบ</StatusBadge>
+<BlockerBadge>ข้อมูลไม่ครบ</BlockerBadge>
+<PhoneText>{phoneFromServer}</PhoneText>
+```
 
 ## ติดตั้งผ่าน shadcn registry (Next.js หรือ Vite)
 

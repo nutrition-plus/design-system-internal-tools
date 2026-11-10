@@ -866,6 +866,83 @@
       ]
     },
     {
+      "name": "status-badge",
+      "type": "registry:block",
+      "title": "Status badge",
+      "description": "Status label with a semantic badge variant and dot.",
+      "dependencies": [],
+      "registryDependencies": [
+        "@moove/moove-theme",
+        "@moove/badge"
+      ],
+      "files": [
+        {
+          "path": "src/components/patterns/status-badge.tsx",
+          "type": "registry:component",
+          "target": "components/patterns/status-badge.tsx"
+        }
+      ]
+    },
+    {
+      "name": "blocker-badge",
+      "type": "registry:block",
+      "title": "Blocker badge",
+      "description": "Text label for a blocker with a warning icon.",
+      "dependencies": [
+        "lucide-react@^1.65.0"
+      ],
+      "registryDependencies": [
+        "@moove/moove-theme",
+        "@moove/badge"
+      ],
+      "files": [
+        {
+          "path": "src/components/patterns/blocker-badge.tsx",
+          "type": "registry:component",
+          "target": "components/patterns/blocker-badge.tsx"
+        }
+      ]
+    },
+    {
+      "name": "phone-text",
+      "type": "registry:block",
+      "title": "Phone text",
+      "description": "Displays a phone value exactly as provided by the server.",
+      "dependencies": [],
+      "registryDependencies": [
+        "@moove/moove-theme"
+      ],
+      "files": [
+        {
+          "path": "src/components/patterns/phone-text.tsx",
+          "type": "registry:component",
+          "target": "components/patterns/phone-text.tsx"
+        }
+      ]
+    },
+    {
+      "name": "reason-dialog",
+      "type": "registry:block",
+      "title": "Reason dialog",
+      "description": "Collects a required reason before confirming an action.",
+      "dependencies": [],
+      "registryDependencies": [
+        "@moove/moove-theme",
+        "@moove/button",
+        "@moove/dialog",
+        "@moove/field",
+        "@moove/spinner",
+        "@moove/textarea"
+      ],
+      "files": [
+        {
+          "path": "src/components/patterns/reason-dialog.tsx",
+          "type": "registry:component",
+          "target": "components/patterns/reason-dialog.tsx"
+        }
+      ]
+    },
+    {
       "name": "feedback-states",
       "type": "registry:block",
       "title": "Feedback states",

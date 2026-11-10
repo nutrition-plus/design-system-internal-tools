@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.0 — 2026-11-10
+
+### Added
+- `StatusBadge`, `BlockerBadge`, `PhoneText`, and `ReasonDialog` as reusable patterns. Applications supply their own labels and status mapping; `PhoneText` displays the server-provided value without masking it.
+
 ## 0.3.2 — 2026-11-04
 
 ### Fixed
