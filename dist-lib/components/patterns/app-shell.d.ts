@@ -1,5 +1,14 @@
 import * as React from "react";
 import { type LucideIcon } from "lucide-react";
+export type NavSubItem = {
+    title: string;
+    href: string;
+    active?: boolean;
+    /** Count shown on the right, e.g. open orders in that view. */
+    count?: number;
+    /** Items grouped under this one, shown indented below it (for example "Work queue" with "To review" and "Ready to book"). */
+    children?: NavSubItem[];
+};
 export type NavItem = {
     title: string;
     href: string;
@@ -7,14 +16,8 @@ export type NavItem = {
     active?: boolean;
     /** Count of items needing attention, e.g. open blockers. */
     badge?: number;
-    /** Sub-items. When present the item expands and collapses (shadcn sidebar-07 pattern). */
-    children?: {
-        title: string;
-        href: string;
-        active?: boolean;
-        /** Count shown on the right, e.g. open orders in that view. */
-        count?: number;
-    }[];
+    /** Sub-items. When present the item expands and collapses (shadcn sidebar-07 pattern). A sub-item can have its own sub-items. */
+    children?: NavSubItem[];
 };
 export type NavGroup = {
     label?: string;
