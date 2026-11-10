@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.0 — 2026-11-10
+
+### Added
+- `AppShell` nav: a sub-item can have its own `children` (new type `NavSubItem`). They are shown indented below it in the expanded sidebar, and as indented items in the collapsed rail's menu. Use it to group a few views under one view, for example a "Work queue" item with "To review" and "Ready to book" under it.
+
 ## 0.5.0 — 2026-11-10
 
 ### Added

@@ -51,6 +51,16 @@ import {
 const MENU_ITEM =
   "border border-transparent hover:border-muted-foreground hover:bg-background hover:text-foreground active:bg-background data-active:border-primary data-active:bg-background data-active:font-medium data-active:text-primary data-open:hover:bg-background focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/40"
 
+export type NavSubItem = {
+  title: string
+  href: string
+  active?: boolean
+  /** Count shown on the right, e.g. open orders in that view. */
+  count?: number
+  /** Items grouped under this one, shown indented below it (for example "Work queue" with "To review" and "Ready to book"). */
+  children?: NavSubItem[]
+}
+
 export type NavItem = {
   title: string
   href: string
@@ -58,14 +68,8 @@ export type NavItem = {
   active?: boolean
   /** Count of items needing attention, e.g. open blockers. */
   badge?: number
-  /** Sub-items. When present the item expands and collapses (shadcn sidebar-07 pattern). */
-  children?: {
-    title: string
-    href: string
-    active?: boolean
-    /** Count shown on the right, e.g. open orders in that view. */
-    count?: number
-  }[]
+  /** Sub-items. When present the item expands and collapses (shadcn sidebar-07 pattern). A sub-item can have its own sub-items. */
+  children?: NavSubItem[]
 }
 
 export type NavGroup = { label?: string; items: NavItem[] }
@@ -166,12 +170,75 @@ function SidebarToggle() {
   )
 }
 
+/** True when the item or any item below it is the current page. */
+function anyActive(items: NavSubItem[]): boolean {
+  return items.some((c) => !!c.active || anyActive(c.children ?? []))
+}
+
 function NavCount({ count }: { count?: number }) {
   if (count === undefined) return null
   return (
     <span className="ml-auto text-xs text-muted-foreground tabular-nums">
       {count.toLocaleString("th-TH")}
     </span>
+  )
+}
+
+/** Sub-items in the collapsed rail's menu. Items under another item are indented. */
+function RailItems({ items, depth }: { items: NavSubItem[]; depth: number }) {
+  return items.map((child) => (
+    <React.Fragment key={child.href}>
+      <DropdownMenuItem
+        asChild
+        className={cn(
+          "min-h-11",
+          depth > 0 && "pl-6",
+          child.active && "font-semibold text-primary"
+        )}
+      >
+        <a href={child.href} aria-current={child.active ? "page" : undefined}>
+          <span>{child.title}</span>
+          <NavCount count={child.count} />
+        </a>
+      </DropdownMenuItem>
+      {child.children?.length ? (
+        <RailItems items={child.children} depth={depth + 1} />
+      ) : null}
+    </React.Fragment>
+  ))
+}
+
+/** Sub-items of an expanded group. An item with its own sub-items shows them indented below it. */
+function SubItems({ items }: { items: NavSubItem[] }) {
+  return (
+    <SidebarMenuSub className="gap-0.5 py-1">
+      {items.map((child) => (
+        <SidebarMenuSubItem key={child.href} className="relative">
+          {/* dot sitting on the vertical guide line */}
+          <span
+            aria-hidden
+            className={cn(
+              "absolute top-3.5 -left-[13.5px] size-1.5 -translate-y-1/2 rounded-full",
+              child.active ? "bg-primary" : "bg-border"
+            )}
+          />
+          <SidebarMenuSubButton
+            asChild
+            isActive={child.active}
+            className={MENU_ITEM}
+          >
+            <a
+              href={child.href}
+              aria-current={child.active ? "page" : undefined}
+            >
+              <span>{child.title}</span>
+              <NavCount count={child.count} />
+            </a>
+          </SidebarMenuSubButton>
+          {child.children?.length ? <SubItems items={child.children} /> : null}
+        </SidebarMenuSubItem>
+      ))}
+    </SidebarMenuSub>
   )
 }
 
@@ -182,7 +249,7 @@ function NavCount({ count }: { count?: number }) {
 function NavGroupItem({ item }: { item: NavItem }) {
   const { state, isMobile } = useSidebar()
   const children = item.children ?? []
-  const isActive = !!item.active || children.some((c) => c.active)
+  const isActive = !!item.active || anyActive(children)
 
   if (state === "collapsed" && !isMobile) {
     return (
@@ -206,24 +273,7 @@ function NavGroupItem({ item }: { item: NavItem }) {
             className="min-w-52"
           >
             <DropdownMenuLabel>{item.title}</DropdownMenuLabel>
-            {children.map((child) => (
-              <DropdownMenuItem
-                key={child.href}
-                asChild
-                className={cn(
-                  "min-h-11",
-                  child.active && "font-semibold text-primary"
-                )}
-              >
-                <a
-                  href={child.href}
-                  aria-current={child.active ? "page" : undefined}
-                >
-                  <span>{child.title}</span>
-                  <NavCount count={child.count} />
-                </a>
-              </DropdownMenuItem>
-            ))}
+            <RailItems items={children} depth={0} />
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
@@ -244,33 +294,7 @@ function NavGroupItem({ item }: { item: NavItem }) {
           </SidebarMenuButton>
         </CollapsibleTrigger>
         <CollapsibleContent>
-          <SidebarMenuSub className="gap-0.5 py-1">
-            {children.map((child) => (
-              <SidebarMenuSubItem key={child.href} className="relative">
-                {/* dot sitting on the vertical guide line */}
-                <span
-                  aria-hidden
-                  className={cn(
-                    "absolute top-1/2 -left-[13.5px] size-1.5 -translate-y-1/2 rounded-full",
-                    child.active ? "bg-primary" : "bg-border"
-                  )}
-                />
-                <SidebarMenuSubButton
-                  asChild
-                  isActive={child.active}
-                  className={MENU_ITEM}
-                >
-                  <a
-                    href={child.href}
-                    aria-current={child.active ? "page" : undefined}
-                  >
-                    <span>{child.title}</span>
-                    <NavCount count={child.count} />
-                  </a>
-                </SidebarMenuSubButton>
-              </SidebarMenuSubItem>
-            ))}
-          </SidebarMenuSub>
+          <SubItems items={children} />
         </CollapsibleContent>
       </SidebarMenuItem>
     </Collapsible>
