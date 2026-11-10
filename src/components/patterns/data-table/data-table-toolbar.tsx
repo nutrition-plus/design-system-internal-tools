@@ -32,6 +32,8 @@ type DataTableToolbarProps<TData extends RowData> = {
   filters?: React.ReactNode
   /** Actions on the right, e.g. Export. */
   actions?: React.ReactNode
+  /** Show the built-in "คอลัมน์" menu (show or hide columns). Set false when the page draws its own, e.g. ColumnLayoutControls. */
+  columnsMenu?: boolean
 }
 
 function DataTableToolbar<TData extends RowData>({
@@ -40,6 +42,7 @@ function DataTableToolbar<TData extends RowData>({
   debounce = 300,
   filters,
   actions,
+  columnsMenu = true,
 }: DataTableToolbarProps<TData>) {
   const globalFilter = (table.state.globalFilter as string | undefined) ?? ""
   const [search, setSearch] = React.useState(globalFilter)
@@ -47,7 +50,10 @@ function DataTableToolbar<TData extends RowData>({
 
   React.useEffect(() => {
     if (search === globalFilter) return
-    const timer = setTimeout(() => table.setGlobalFilter(search || undefined), debounce)
+    const timer = setTimeout(
+      () => table.setGlobalFilter(search || undefined),
+      debounce
+    )
     return () => clearTimeout(timer)
   }, [search, globalFilter, debounce, table])
 
@@ -58,7 +64,10 @@ function DataTableToolbar<TData extends RowData>({
   }
 
   return (
-    <div data-slot="data-table-toolbar" className="flex flex-wrap items-center gap-2">
+    <div
+      data-slot="data-table-toolbar"
+      className="flex flex-wrap items-center gap-2"
+    >
       <InputGroup className="w-full sm:w-72">
         <InputGroupAddon>
           <SearchIcon />
@@ -72,7 +81,11 @@ function DataTableToolbar<TData extends RowData>({
         />
         {search && (
           <InputGroupAddon align="inline-end">
-            <InputGroupButton size="icon-xs" aria-label="ล้างคำค้นหา" onClick={() => setSearch("")}>
+            <InputGroupButton
+              size="icon-xs"
+              aria-label="ล้างคำค้นหา"
+              onClick={() => setSearch("")}
+            >
               <XIcon />
             </InputGroupButton>
           </InputGroupAddon>
@@ -87,33 +100,37 @@ function DataTableToolbar<TData extends RowData>({
       )}
       <div className="ml-auto flex items-center gap-2">
         {actions}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline">
-              <Columns3Icon data-icon="inline-start" />
-              คอลัมน์
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-52">
-            <DropdownMenuGroup>
-              <DropdownMenuLabel>แสดงคอลัมน์</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {table
-                .getAllLeafColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                    onSelect={(event) => event.preventDefault()}
-                  >
-                    {column.columnDef.meta?.label ?? column.id}
-                  </DropdownMenuCheckboxItem>
-                ))}
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {columnsMenu && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                <Columns3Icon data-icon="inline-start" />
+                คอลัมน์
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-52">
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>แสดงคอลัมน์</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {table
+                  .getAllLeafColumns()
+                  .filter((column) => column.getCanHide())
+                  .map((column) => (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                      onSelect={(event) => event.preventDefault()}
+                    >
+                      {column.columnDef.meta?.label ?? column.id}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
     </div>
   )

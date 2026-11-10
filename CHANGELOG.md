@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0 — 2026-11-10
+
+### Added
+- `ColumnLayoutDataTable` and `ColumnLayoutTable`: tables whose columns the user can move and resize. The layout is remembered per `tableId` in localStorage (`moove-table:<tableId>`). `ColumnLayoutDataTable` draws a TanStack table (same markup and row-click rule as `DataTable`); `ColumnLayoutTable` draws plain rows from a column list, with optional pinned columns and a footer.
+- `useColumnLayout(tableId, movableIds)` and `ColumnLayoutControls`: one "คอลัมน์" button to show or hide, move (arrows, 44px targets) and reset the columns. Resize works by touch, pen, mouse and keyboard.
+- `DataTableToolbar` prop `columnsMenu` (default `true`). Set it to `false` when the page draws `ColumnLayoutControls`, so there is one "คอลัมน์" button, not two.
+- Base styles for the resize handle and the fixed-width mode (`data-layout="fixed"`) in `base.css`.
+
 ## 0.4.1 — 2026-11-10
 
 ### Fixed

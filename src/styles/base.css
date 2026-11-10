@@ -71,3 +71,15 @@
   height: max(100%, var(--hit-min));
   transform: translate(-50%, -50%);
 }
+
+/* Tables with movable and resizable columns (ColumnLayoutDataTable, ColumnLayoutTable). The resize handle sits on each
+   header's right edge, so a header is a positioning context. Low specificity (:where) so a sticky first column still wins. */
+[data-slot="table"] :where(th) {
+  position: relative;
+}
+/* After the user resizes a column the table uses fixed widths (data-layout="fixed"); text that does not fit is cut
+   with "…" instead of spilling into the next column. */
+[data-slot="table"][data-layout="fixed"] :is(th, td) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
