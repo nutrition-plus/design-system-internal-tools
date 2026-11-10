@@ -1,6 +1,6 @@
 {
   "name": "@moove/design-system",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
   "description": "MOOVE Design System for OMS and internal tools: tokens, shadcn/ui components, patterns and Storybook docs.",
