@@ -88,5 +88,5 @@ registry.json → public/r/   shadcn registry (@moove)
 
 Every pull request and push to `main` runs the `verify` check (`.github/workflows/ci.yml`): generated tokens up to date, `bun test`, typecheck, lint, story tests with accessibility checks, and Storybook and registry builds. `main` accepts changes only through a pull request that passes it (see [CONTRIBUTING.md](CONTRIBUTING.md)).
 
-Nothing is deployed automatically. To publish the registry for other systems, run `bun run registry:build` and host `public/r/` on an internal static host (decision D4 is still open), then register it with
+Storybook is published publicly at <https://nutrition-plus.github.io/design-system-internal-tools/> on pushes to `main`. The registry is not deployed automatically. To publish it for other systems, run `bun run registry:build` and host `public/r/` on an internal static host (decision D4 is still open), then register it with
 `bunx --bun shadcn@latest registry add @moove=<REGISTRY_HOST>/r/{name}.json`.
