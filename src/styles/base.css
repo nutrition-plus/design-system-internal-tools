@@ -83,3 +83,79 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/*
+ * Table heading row: always keeps the tinted header colour (the <thead> background), even when an app gives the body
+ * rows a background. In the base layer so hover and selected utilities still win.
+ */
+@layer base {
+  [data-slot="table-header"] > [data-slot="table-row"] {
+    background-color: transparent;
+  }
+}
+
+/*
+ * Opt-in sticky first column: <Table data-sticky-first> keeps the first column in view while the table scrolls
+ * sideways. Tables without the attribute are not changed. Rows get a solid background so the cells that scroll under
+ * the sticky one do not show through; hover and selected utilities still win (layered), and the sticky cell follows
+ * the row colour with `inherit`. Unlayered so it beats the `:where(th)` rule above. The table is also made as wide as
+ * its content (min-width: max-content, no wrapping) so it scrolls sideways instead of squeezing the columns.
+ */
+@layer base {
+  [data-slot="table"][data-sticky-first] [data-slot="table-row"] {
+    background-color: var(--background);
+  }
+  [data-slot="table"][data-sticky-first]
+    [data-slot="table-header"]
+    > [data-slot="table-row"] {
+    background-color: transparent;
+  }
+  [data-slot="table"][data-sticky-first] [data-slot="table-footer"] > tr,
+  [data-slot="table"][data-sticky-first]
+    [data-slot="table-footer"]
+    > [data-slot="table-row"] {
+    background-color: var(--secondary);
+  }
+}
+[data-slot="table-container"]:has(> [data-slot="table"][data-sticky-first]) {
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+[data-slot="table"][data-sticky-first] {
+  min-width: max-content;
+}
+[data-slot="table"][data-sticky-first] :is(th, td) {
+  white-space: nowrap;
+}
+[data-slot="table"][data-sticky-first] [data-slot="table-row"] > :first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background-color: inherit;
+}
+[data-slot="table"][data-sticky-first]
+  [data-slot="table-header"]
+  > [data-slot="table-row"]
+  > :first-child {
+  background-color: var(--secondary);
+}
+
+/*
+ * Row flag: a table row that contains <RowFlag tone="danger|info"> gets a light tint and a 5px bar on the left edge of
+ * its first cell, so flagged rows stand out in a list. In the components layer, so hover and selected utilities
+ * still win. Needs `:has()` (Safari / iPadOS 15.4+); on older browsers only the icon marker shows.
+ */
+@layer components {
+  [data-slot="table-row"]:has([data-row-flag="danger"]) {
+    background-color: color-mix(in oklab, var(--destructive) 8%, var(--background));
+  }
+  [data-slot="table-row"]:has([data-row-flag="danger"]) > :first-child {
+    box-shadow: inset 5px 0 0 var(--destructive);
+  }
+  [data-slot="table-row"]:has([data-row-flag="info"]) {
+    background-color: color-mix(in oklab, var(--info) 8%, var(--background));
+  }
+  [data-slot="table-row"]:has([data-row-flag="info"]) > :first-child {
+    box-shadow: inset 5px 0 0 var(--info);
+  }
+}

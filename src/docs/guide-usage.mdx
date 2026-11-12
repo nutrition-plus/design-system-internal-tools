@@ -14,7 +14,7 @@ import { Meta } from "@storybook/addon-docs/blocks"
 repo นี้เป็น private ใช้ภายในเท่านั้น ผู้ติดตั้งต้องมีสิทธิ์อ่าน repo (ขอได้จากทีม Design System) และตั้ง SSH key กับ GitHub ไว้แล้ว
 
 ```bash
-bun add git+ssh://git@github.com/Nutrition-Plus/design-system-internal-tools.git#v0.6.0
+bun add git+ssh://git@github.com/Nutrition-Plus/design-system-internal-tools.git#v0.7.0
 ```
 
 แล้วตั้งค่า CSS หลัก (ไฟล์ที่มี `@import "tailwindcss"`):
@@ -128,6 +128,85 @@ bunx --bun shadcn@latest add @moove/moove-theme @moove/button @moove/data-table 
 5. ห่อแอปด้วย `<TooltipProvider>` และใส่ `<Toaster />` หนึ่งครั้ง
 
 > ทดสอบขั้นตอนนี้แล้วกับโปรเจกต์ Vite ใหม่ (`shadcn init -t vite -b radix`): ติดตั้งผ่าน registry, typecheck และ `vite build` ผ่าน
+
+## Patterns เพิ่มเติมตั้งแต่ 0.7.0
+
+ทุกตัวไม่มีคำศัพท์เฉพาะระบบ ข้อความตัวเลขและหน่วยให้แอปจัดรูปแบบเอง
+
+### Combobox
+
+Dropdown ที่พิมพ์ค้นหาได้ และเสนอ "เพิ่มใหม่" เมื่อไม่มีรายการที่ตรงเป๊ะ แถวสูง 44px แตะรายการแล้วปิดและล้างข้อความ
+
+Props: `value`, `options` (`{ value, label }[]`), `onChange(value)`, `ariaLabel` (จำเป็น), `onCreate?(text)` (ไม่ส่ง = ไม่มีแถวเพิ่มใหม่), `createLabel?(text)`, `placeholder?` (ค่าเริ่มต้น "ค้นหา"), `emptyText?` (ค่าเริ่มต้น "ไม่พบรายการ"), `className?`
+
+```tsx
+<Combobox
+  ariaLabel="เลือกรายการ"
+  value={value}
+  options={options}
+  onChange={setValue}
+  onCreate={(text) => openCreateForm(text)}
+  createLabel={(text) => `เพิ่ม "${text}"`}
+/>
+```
+
+### RowFlag
+
+ไอคอนเล็กวางใน cell แรกของแถวตาราง ทำให้ทั้งแถวมีสีจางและมีแถบ 5px ที่ขอบซ้าย (ต้องใช้ `:has()` คือ iPadOS 15.4 ขึ้นไป; เบราว์เซอร์เก่าเห็นแค่ไอคอน) สีแถวอยู่ใน components layer จึงไม่ทับ hover และ selected
+
+Props: `tone` (`"danger"` | `"info"`), `label` (ใช้เป็น `aria-label` และ `title`), `icon?` (Lucide icon; ค่าเริ่มต้น `TriangleAlertIcon` / `SparklesIcon`) ตั้ง `data-row-flag="danger"` หรือ `"info"`
+
+```tsx
+<TableCell><RowFlag tone="danger" label="ต้องตรวจสอบ" /> A-1001</TableCell>
+```
+
+### CellStack และ LabeledLine
+
+รวมข้อมูลที่เกี่ยวกันไว้ใน cell เดียว แทนที่จะกระจายหลายคอลัมน์แคบ `LabeledLine` รับ `label` (สีจาง) และ children (ค่า, ตัดด้วย … ถ้ายาว ใส่ `title` เพื่อดูเต็ม)
+
+```tsx
+<CellStack>
+  <LabeledLine label="ชื่อ">{name}</LabeledLine>
+  <LabeledLine label="โทร" title={phone}>{phone}</LabeledLine>
+</CellStack>
+```
+
+### StatPill
+
+Pill สีสำหรับตัวเลขหรือจำนวนเงินที่จัดรูปแบบมาแล้ว ตัวเลขกว้างเท่ากัน (tabular) Props: `tone?` (`info` | `success` | `warning` | `danger` | `neutral`, ค่าเริ่มต้น `neutral`) และ props ของ `Badge`
+
+```tsx
+<StatPill tone="success">{formattedAmount}</StatPill>
+```
+
+### KpiCard
+
+การ์ดตัวเลขสรุป Props: `label`, `value`, `sub?`, `tone?` (สีตัวเลข), `bar?` (แถบสีบนขอบบน), `pill?`, `note?`, `href?` + `linkLabel?` (บรรทัดลิงก์ล่างการ์ด) และ props ของ `Card`
+
+```tsx
+<KpiCard label="ยอดวันนี้" value="1,250" sub="เมื่อวาน 1,100" tone="success" bar="success" pill={<StatPill tone="success">+150</StatPill>} />
+```
+
+### StickyActions และ FormSection
+
+`StickyActions` คือแถบปุ่มที่ติดขอบล่างของ Sheet หรือ Dialog ที่เลื่อนได้ มีบรรทัด `hint?` เหนือปุ่ม (ใช้ `-mx-4` ชดเชย padding 16px ของ container และพื้นหลัง `bg-popover`) `FormSection` คือกลุ่มช่องกรอกที่มีหัวข้อ (`title`, `hint?`) ในฟอร์มแก้ไข
+
+```tsx
+<FormSection title="ที่อยู่" hint="ตรวจให้ตรงกับใบสั่ง">{fields}</FormSection>
+<StickyActions hint="กรอกให้ครบก่อนบันทึก">
+  <Button className="grow">บันทึก</Button>
+  <Button variant="outline">ยกเลิก</Button>
+</StickyActions>
+```
+
+### ตาราง: หัวตารางและคอลัมน์แรกที่ติดซ้าย
+
+- แถวหัวตาราง (`TableHeader`) คงสีหัวตารางเสมอ แม้แอปตั้งสีพื้นให้แถวเนื้อหา ไม่ต้องเขียน override เอง
+- คอลัมน์แรกติดซ้ายขณะเลื่อนตารางไปด้านข้างเป็น opt-in: ใส่ `data-sticky-first` ที่ `Table` (ตารางจะกว้างตามเนื้อหาและไม่ตัดบรรทัด) ตารางที่ไม่ใส่ไม่เปลี่ยนหน้าตา
+
+```tsx
+<Table data-sticky-first>...</Table>
+```
 
 ## อัปเดตเมื่อ design system ออกเวอร์ชันใหม่
 
