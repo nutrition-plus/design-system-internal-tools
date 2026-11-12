@@ -28,7 +28,7 @@ bun run storybook        # เปิดที่ localhost:8000 (ถ้า port 
 repo นี้เป็น private ใช้ภายในเท่านั้น ผู้ติดตั้งต้องมีสิทธิ์อ่าน repo และตั้ง SSH key กับ GitHub ไว้แล้ว
 
 ```bash
-bun add git+ssh://git@github.com/Nutrition-Plus/design-system-internal-tools.git#v0.6.0
+bun add git+ssh://git@github.com/Nutrition-Plus/design-system-internal-tools.git#v0.7.0
 ```
 
 CI ของระบบปลายทางต้องมีสิทธิ์อ่าน repo นี้ด้วย ไม่งั้น `bun install` จะล้มเหลว ดูวิธีตั้ง deploy key ใน Storybook → **Guides/Using in your app**
@@ -56,7 +56,7 @@ tokens/                     Source of truth (W3C DTCG JSON) + contrast.json
 scripts/                    build-tokens, build-registry, check-port, screenshot
 src/styles/                 tokens.css (generated), fonts.css, base.css
 src/components/ui/          shadcn/ui primitives ที่ปรับเข้ากับ MOOVE + stories
-src/components/patterns/    DataTable, ConfirmDialog, Empty/ErrorState, PageHeader, AppShell
+src/components/patterns/    DataTable, ConfirmDialog, Empty/ErrorState, PageHeader, AppShell, Combobox, RowFlag, CellStack, StatPill, KpiCard, StickyActions/FormSection (รายละเอียดใน src/docs/guide-usage.mdx)
 src/examples/               หน้าตัวอย่าง OMS สำหรับผู้บริหาร
 src/docs/                   MDX: Principles, Foundations, Patterns, Guides
 registry.json → public/r/   shadcn registry (@moove)

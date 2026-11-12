@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.7.0 — 2026-11-12
+
+### Added
+- `Combobox`: a dropdown you can type in (Popover + Command). It narrows the list as you type and can offer an "add new" row (`onCreate`, `createLabel`). Thai default texts, overridable with `placeholder` and `emptyText`. Pure helpers `filterComboboxOptions` and `canCreateFromText` are exported too.
+- `RowFlag`: an icon marker (`tone` danger or info) for the first cell of a table row. The row gets a light tint and a 5px bar on its first cell (`data-row-flag`, needs `:has()`, iPadOS 15.4+).
+- `CellStack` and `LabeledLine`: a stack of small lines for one dense table cell, and a muted label with its value.
+- `StatPill`: a coloured pill with tabular digits for an amount or a number (`tone` info, success, warning, danger, neutral). The app formats the text.
+- `KpiCard`: label, big number in a tone colour, sub text, optional top bar, pill, note and link.
+- `StickyActions` and `FormSection`: an action bar stuck to the bottom of a scrolling sheet or dialog, and a titled group of fields in an edit form.
+
+### Changed
+- Tables: the heading row keeps the tinted header colour even when an app gives body rows a background. Apps no longer need their own override.
+- Tables: opt-in sticky first column. Put `data-sticky-first` on `<Table>` to keep the first column in view while the table scrolls sideways (the table is also as wide as its content and does not wrap). Tables without the attribute look the same as before.
+
 ## 0.6.0 — 2026-11-10
 
 ### Added
