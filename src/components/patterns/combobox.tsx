@@ -20,8 +20,10 @@ import {
 } from "@/components/ui/popover"
 import {
   canCreateFromText,
-  filterComboboxOptions,
+  resolveEmptyText,
+  searchComboboxOptions,
   type ComboboxOption,
+  type ComboboxSearch,
 } from "./combobox-search"
 
 type ComboboxProps = {
@@ -32,10 +34,16 @@ type ComboboxProps = {
   onCreate?: (text: string) => void
   /** Text of the "add new" row for the typed text. */
   createLabel?: (text: string) => string
-  /** Shown in the search field. */
+  /** Shown on the trigger button while nothing is picked. */
   placeholder?: string
-  /** Shown when nothing matches and "add new" is not offered. */
-  emptyText?: string
+  /** Shown in the search field. Default: "ค้นหา". */
+  searchPlaceholder?: string
+  /** Shown when nothing matches and "add new" is not offered. A function gets the typed text. */
+  emptyText?: string | ((text: string) => string)
+  /** Own search instead of "label contains the typed text". "Add new" still follows the typed text. */
+  search?: ComboboxSearch
+  /** Marks the trigger invalid (`aria-invalid` and the destructive border). */
+  invalid?: boolean
   ariaLabel: string
   className?: string
 }
@@ -50,14 +58,17 @@ function Combobox({
   onChange,
   onCreate,
   createLabel = (text) => `เพิ่ม "${text}"`,
-  placeholder = "ค้นหา",
+  placeholder,
+  searchPlaceholder = "ค้นหา",
   emptyText = "ไม่พบรายการ",
+  search,
+  invalid,
   ariaLabel,
   className,
 }: ComboboxProps) {
   const [open, setOpen] = React.useState(false)
   const [text, setText] = React.useState("")
-  const shown = filterComboboxOptions(options, text)
+  const shown = searchComboboxOptions(options, text, search)
   const canCreate = onCreate !== undefined && canCreateFromText(options, text)
   const current = options.find((o) => o.value === value)
 
@@ -75,9 +86,12 @@ function Combobox({
           role="combobox"
           aria-expanded={open}
           aria-label={ariaLabel}
+          aria-invalid={invalid || undefined}
           className={cn("min-h-11 w-64 justify-between font-normal", className)}
         >
-          <span className="truncate">{current?.label ?? ""}</span>
+          <span className={cn("truncate", !current && "text-muted-foreground")}>
+            {current?.label ?? placeholder ?? ""}
+          </span>
           <ChevronsUpDownIcon data-icon="inline-end" className="opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -89,11 +103,11 @@ function Combobox({
           <CommandInput
             value={text}
             onValueChange={setText}
-            placeholder={placeholder}
+            placeholder={searchPlaceholder}
           />
           <CommandList>
             {shown.length === 0 && !canCreate && (
-              <CommandEmpty>{emptyText}</CommandEmpty>
+              <CommandEmpty>{resolveEmptyText(emptyText, text)}</CommandEmpty>
             )}
             <CommandGroup>
               {shown.map((o) => (

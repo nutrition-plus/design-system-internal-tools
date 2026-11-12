@@ -6,5 +6,8 @@ declare function statBadgeVariant(tone: StatTone): StatBadgeVariant;
 declare function statTextClass(tone: StatTone): string;
 /** Background class of a colour bar in a tone. */
 declare function statBarClass(tone: StatTone): string;
-export { statBadgeVariant, statBarClass, statTextClass };
-export type { StatBadgeVariant, StatTone };
+type StatDirection = "up" | "down" | "same";
+/** The tone of a change: neutral when same, success when it moved the good way, else danger. */
+declare function statDeltaTone(direction: StatDirection, goodWhen?: "up" | "down"): StatTone;
+export { statBadgeVariant, statDeltaTone, statBarClass, statTextClass };
+export type { StatBadgeVariant, StatDirection, StatTone };

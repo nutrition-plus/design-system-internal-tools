@@ -3,10 +3,13 @@ import { describe, expect, test } from "bun:test"
 import {
   canCreateFromText,
   filterComboboxOptions,
+  resolveEmptyText,
+  searchComboboxOptions,
 } from "../src/components/patterns/combobox-search"
 import {
   statBadgeVariant,
   statBarClass,
+  statDeltaTone,
   statTextClass,
 } from "../src/components/patterns/stat-tone"
 
@@ -62,5 +65,46 @@ describe("stat tones", () => {
     expect(statTextClass("neutral")).toBe("text-foreground")
     expect(statBarClass("success")).toBe("bg-success")
     expect(statBarClass("neutral")).toBe("bg-border")
+  })
+})
+
+describe("searchComboboxOptions", () => {
+  test("without own search it filters by label", () => {
+    expect(searchComboboxOptions(options, "apple")).toEqual([options[0]])
+  })
+  test("with own search it uses that and gets all options and the text", () => {
+    const own = (all: typeof options, text: string) =>
+      all.filter((o) => o.value === text)
+    expect(searchComboboxOptions(options, "b", own)).toEqual([options[1]])
+  })
+  test("own search does not change how add new is decided", () => {
+    const own = () => []
+    expect(searchComboboxOptions(options, "apple juice", own)).toEqual([])
+    expect(canCreateFromText(options, "apple juice")).toBe(false)
+    expect(canCreateFromText(options, "apple")).toBe(true)
+  })
+})
+
+describe("resolveEmptyText", () => {
+  test("a string is returned as is", () => {
+    expect(resolveEmptyText("none", "x")).toBe("none")
+  })
+  test("a function gets the typed text", () => {
+    expect(resolveEmptyText((t) => `no ${t}`, "abc")).toBe("no abc")
+  })
+})
+
+describe("statDeltaTone", () => {
+  test("same is neutral", () => {
+    expect(statDeltaTone("same")).toBe("neutral")
+    expect(statDeltaTone("same", "down")).toBe("neutral")
+  })
+  test("up is good by default", () => {
+    expect(statDeltaTone("up")).toBe("success")
+    expect(statDeltaTone("down")).toBe("danger")
+  })
+  test("goodWhen down flips the colours", () => {
+    expect(statDeltaTone("down", "down")).toBe("success")
+    expect(statDeltaTone("up", "down")).toBe("danger")
   })
 })

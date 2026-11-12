@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.7.5 — 2026-11-12
+
+### Added
+- `StatDelta`: a small "change versus before" pill with an arrow (`direction` up, down or same; `goodWhen` says which direction is good, default up). Green, red or grey. The app writes the text. Use it in the `pill` slot of `KpiCard`. Pure helper `statDeltaTone` is exported too.
+- `Combobox` props `searchPlaceholder` (the search field text, default "ค้นหา"), `search(options, text)` (own search instead of "label contains the typed text"; "add new" follows the same rule as before), `invalid` (`aria-invalid` and the destructive border on the trigger), and `emptyText` can now be a function of the typed text. Pure helpers `searchComboboxOptions` and `resolveEmptyText` are exported too.
+
+### Changed
+- `Combobox` `placeholder` now means the text on the trigger button while nothing is picked (muted colour). In 0.7.0 it meant the search field; that text is now `searchPlaceholder`. Breaking, but 0.7.0 was released only hours ago.
+
 ## 0.7.0 — 2026-11-12
 
 ### Added

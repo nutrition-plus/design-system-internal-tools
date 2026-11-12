@@ -14,7 +14,7 @@ import { Meta } from "@storybook/addon-docs/blocks"
 repo นี้เป็น private ใช้ภายในเท่านั้น ผู้ติดตั้งต้องมีสิทธิ์อ่าน repo (ขอได้จากทีม Design System) และตั้ง SSH key กับ GitHub ไว้แล้ว
 
 ```bash
-bun add git+ssh://git@github.com/Nutrition-Plus/design-system-internal-tools.git#v0.7.0
+bun add git+ssh://git@github.com/Nutrition-Plus/design-system-internal-tools.git#v0.7.5
 ```
 
 แล้วตั้งค่า CSS หลัก (ไฟล์ที่มี `@import "tailwindcss"`):
@@ -137,7 +137,9 @@ bunx --bun shadcn@latest add @moove/moove-theme @moove/button @moove/data-table 
 
 Dropdown ที่พิมพ์ค้นหาได้ และเสนอ "เพิ่มใหม่" เมื่อไม่มีรายการที่ตรงเป๊ะ แถวสูง 44px แตะรายการแล้วปิดและล้างข้อความ
 
-Props: `value`, `options` (`{ value, label }[]`), `onChange(value)`, `ariaLabel` (จำเป็น), `onCreate?(text)` (ไม่ส่ง = ไม่มีแถวเพิ่มใหม่), `createLabel?(text)`, `placeholder?` (ค่าเริ่มต้น "ค้นหา"), `emptyText?` (ค่าเริ่มต้น "ไม่พบรายการ"), `className?`
+Props: `value`, `options` (`{ value, label }[]`), `onChange(value)`, `ariaLabel` (จำเป็น), `onCreate?(text)` (ไม่ส่ง = ไม่มีแถวเพิ่มใหม่), `createLabel?(text)`, `placeholder?` (ข้อความบนปุ่มขณะยังไม่เลือก), `searchPlaceholder?` (ช่องค้นหา, ค่าเริ่มต้น "ค้นหา"), `emptyText?` (ข้อความหรือฟังก์ชันที่รับข้อความที่พิมพ์, ค่าเริ่มต้น "ไม่พบรายการ"), `search?(options, text)` (ค้นหาเองแทน "label มีข้อความที่พิมพ์"; แถว "เพิ่มใหม่" ยังใช้กฎเดิมคือข้อความที่ไม่ตรงเป๊ะกับรายการใด), `invalid?` (ใส่ `aria-invalid` และขอบสีแดงที่ปุ่ม), `className?`
+
+ตั้งแต่ 0.7.5 `placeholder` คือข้อความบนปุ่ม ส่วนช่องค้นหาใช้ `searchPlaceholder` (ใน 0.7.0 `placeholder` หมายถึงช่องค้นหา)
 
 ```tsx
 <Combobox
@@ -147,6 +149,10 @@ Props: `value`, `options` (`{ value, label }[]`), `onChange(value)`, `ariaLabel`
   onChange={setValue}
   onCreate={(text) => openCreateForm(text)}
   createLabel={(text) => `เพิ่ม "${text}"`}
+  placeholder="เลือกรายการ"
+  searchPlaceholder="พิมพ์เพื่อค้นหา"
+  emptyText={(text) => `ไม่พบ "${text}"`}
+  invalid={!value}
 />
 ```
 
@@ -177,6 +183,16 @@ Pill สีสำหรับตัวเลขหรือจำนวนเง
 
 ```tsx
 <StatPill tone="success">{formattedAmount}</StatPill>
+```
+
+### StatDelta
+
+Pill เล็กแสดง "การเปลี่ยนแปลงเทียบกับก่อนหน้า" พร้อมลูกศร Props: `direction` (`up` | `down` | `same`), `goodWhen?` (`up` | `down`, ทิศทางที่ถือว่าดี, ค่าเริ่มต้น `up`) และ props ของ `Badge` ข้อความ (เช่น "+150") แอปเขียนเองเป็น children สีเขียวเมื่อไปทางที่ดี แดงเมื่อไปทางตรงข้าม เทาเมื่อเท่าเดิม ใช้ใน `pill` ของ `KpiCard` ได้
+
+```tsx
+<StatDelta direction="up">+150</StatDelta>
+<StatDelta direction="down" goodWhen="down">-3</StatDelta>
+<StatDelta direction="same">เท่าเดิม</StatDelta>
 ```
 
 ### KpiCard
