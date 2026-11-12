@@ -14,7 +14,7 @@ import { Meta } from "@storybook/addon-docs/blocks"
 repo นี้เป็น private ใช้ภายในเท่านั้น ผู้ติดตั้งต้องมีสิทธิ์อ่าน repo (ขอได้จากทีม Design System) และตั้ง SSH key กับ GitHub ไว้แล้ว
 
 ```bash
-bun add git+ssh://git@github.com/Nutrition-Plus/design-system-internal-tools.git#v0.7.5
+bun add git+ssh://git@github.com/Nutrition-Plus/design-system-internal-tools.git#v0.7.8
 ```
 
 แล้วตั้งค่า CSS หลัก (ไฟล์ที่มี `@import "tailwindcss"`):
@@ -197,11 +197,27 @@ Pill เล็กแสดง "การเปลี่ยนแปลงเท�
 
 ### KpiCard
 
-การ์ดตัวเลขสรุป Props: `label`, `value`, `sub?`, `tone?` (สีตัวเลข), `bar?` (แถบสีบนขอบบน), `pill?`, `note?`, `href?` + `linkLabel?` (บรรทัดลิงก์ล่างการ์ด) และ props ของ `Card`
+การ์ดตัวเลขสรุป Props: `label`, `value`, `sub?`, `tone?` (สีตัวเลข), `size?` (`default` | `lg` ตัวเลขใหญ่ขึ้นหนึ่งขั้น), `bar?` (แถบสีบนขอบบนตาม tone), `barColor?` (แถบหนา 4px บนขอบบนเป็นสี CSS อะไรก็ได้ เช่น `var(--chart-2)` ใช้แทน `bar` เมื่อมีทั้งคู่), `pill?`, `pillPlacement?` (`below` ค่าเริ่มต้น = ใต้ข้อความ, `inline` = ข้างตัวเลขใหญ่), `note?`, `href?`, `linkPlacement?` (`line` ค่าเริ่มต้น = บรรทัดลิงก์ล่างการ์ด แสดงเมื่อมี `linkLabel`, `card` = ทั้งการ์ดเป็นลิงก์ มีสีพื้นตอน hover), `linkLabel?` (ข้อความบรรทัดลิงก์ และชื่อที่ screen reader อ่านเมื่อทั้งการ์ดเป็นลิงก์ ถ้าไม่ใส่ใช้ `label`), `linkComponent?` (component ที่วาดลิงก์ เช่น `Link` ของ router ค่าเริ่มต้น `a`) และ props ของ `Card`
 
 ```tsx
 <KpiCard label="ยอดวันนี้" value="1,250" sub="เมื่อวาน 1,100" tone="success" bar="success" pill={<StatPill tone="success">+150</StatPill>} />
+
+{/* แถบสีกำหนดเอง + pill ข้างตัวเลข + ทั้งการ์ดเป็นลิงก์ (ใช้ Link ของ router) */}
+<KpiCard
+  label="รอตรวจ"
+  value={12}
+  size="lg"
+  tone="danger"
+  barColor="var(--chart-8)"
+  pill={<StatPill tone="danger">3 รายการเกินกำหนด</StatPill>}
+  pillPlacement="inline"
+  href="/queue"
+  linkPlacement="card"
+  linkComponent={Link}
+/>
 ```
+
+ข้อควรรู้: เมื่อทั้งการ์ดเป็นลิงก์ ลิงก์เป็นชั้นโปร่งใสวางทับการ์ด จึงไม่ควรใส่ปุ่มหรือลิงก์อื่นใน `pill` และ `note`
 
 ### StickyActions และ FormSection
 
@@ -218,10 +234,36 @@ Pill เล็กแสดง "การเปลี่ยนแปลงเท�
 ### ตาราง: หัวตารางและคอลัมน์แรกที่ติดซ้าย
 
 - แถวหัวตาราง (`TableHeader`) คงสีหัวตารางเสมอ แม้แอปตั้งสีพื้นให้แถวเนื้อหา ไม่ต้องเขียน override เอง
-- คอลัมน์แรกติดซ้ายขณะเลื่อนตารางไปด้านข้างเป็น opt-in: ใส่ `data-sticky-first` ที่ `Table` (ตารางจะกว้างตามเนื้อหาและไม่ตัดบรรทัด) ตารางที่ไม่ใส่ไม่เปลี่ยนหน้าตา
+- คอลัมน์แรกติดซ้ายขณะเลื่อนตารางไปด้านข้างเป็น opt-in: ใส่ prop `stickyFirstColumn` ที่ `Table`, `DataTable`, `ColumnLayoutTable` หรือ `ColumnLayoutDataTable` (ตั้ง `data-sticky-first` ให้ ตารางจะกว้างตามเนื้อหาและไม่ตัดบรรทัด) ตารางที่ไม่ใส่ไม่เปลี่ยนหน้าตา การเขียน `data-sticky-first` ที่ `Table` เองยังใช้ได้
+- เซลล์หัวตารางแรกมีสีพื้นทึบ (สีหัวตาราง) เพราะแถวหัวตารางโปร่งใส ส่วนเซลล์แรกของแถวเนื้อหาใช้สีเดียวกับแถว (รวมสี hover, selected และสีแถวที่ติด `RowFlag`) สีเหล่านี้อยู่ใน layer `base` แอปจึงเปลี่ยนสีเซลล์แรกเองได้ เช่น ใส่สีอ่อนให้เซลล์ที่กำลังแก้ไข
 
 ```tsx
-<Table data-sticky-first>...</Table>
+<Table stickyFirstColumn>...</Table>
+<ColumnLayoutTable tableId="orders" stickyFirstColumn columns={columns} rows={rows} rowKey={(r) => r.id} />
+```
+
+### ConflictDialog
+
+กล่องแจ้งว่าบันทึกไม่ได้เพราะมีคนแก้ข้อมูลไปก่อน (version conflict, HTTP 409) ยังไม่มีอะไรถูกบันทึก Props: `open`, `onOpenChange`, `title?`, `description?`, `detail?` (บรรทัดเสริมใต้คำอธิบาย เช่น ใครแก้เมื่อไร), `rows?` (`{ label, value, yours? }` ข้อมูลล่าสุดทีละบรรทัด ถ้ามี `yours` อย่างน้อยหนึ่งแถวจะแสดงสองคอลัมน์ "ที่คุณแก้" กับ "ข้อมูลล่าสุด"), `valueLabel?`, `yoursLabel?`, `onReload?` (มีปุ่มโหลดข้อมูลล่าสุดเมื่อใส่), `reloadLabel?`, `closeLabel?` ข้อความเริ่มต้นเป็นภาษาไทย แก้ได้ทุกข้อความ
+
+```tsx
+<ConflictDialog
+  open={conflict !== null}
+  onOpenChange={(open) => !open && setConflict(null)}
+  detail="แก้โดย สมชาย เมื่อ 10:42"
+  rows={[{ label: "ชื่อ", value: conflict?.name ?? "", yours: draft.name }]}
+  onReload={reload}
+/>
+```
+
+### NoPermission และ PermissionGate
+
+`NoPermission` คือแผงกลางหน้าจอ "ไม่มีสิทธิ์เปิดหน้านี้" Props: `title?`, `description?` (ข้อความไทยเริ่มต้น แก้ได้), `action?` (ปุ่มหรือลิงก์ เช่น กลับไปหน้าที่ใช้ได้) `PermissionGate` แสดง children เมื่อ `allowed` เป็น `true` มิฉะนั้นแสดง `fallback?` (ค่าเริ่มต้นไม่แสดงอะไร) แอปเป็นคนตัดสิน `allowed` เอง ทั้งสองอย่างเป็นการซ่อน UI เท่านั้น ไม่ใช่การป้องกัน ฝั่ง server ต้องตรวจสิทธิ์ทุกคำขอเสมอ
+
+```tsx
+<PermissionGate allowed={can("report.view")} fallback={<NoPermission action={<Button asChild><a href="/">กลับหน้าแรก</a></Button>} />}>
+  <Report />
+</PermissionGate>
 ```
 
 ## อัปเดตเมื่อ design system ออกเวอร์ชันใหม่

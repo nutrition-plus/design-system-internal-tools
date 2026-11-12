@@ -1,5 +1,8 @@
 import * as React from "react";
-declare function Table({ className, ...props }: React.ComponentProps<"table">): React.JSX.Element;
+declare function Table({ className, stickyFirstColumn, ...props }: React.ComponentProps<"table"> & {
+    /** Keeps the first column in view while the table scrolls sideways (sets `data-sticky-first`). */
+    stickyFirstColumn?: boolean;
+}): React.JSX.Element;
 declare function TableHeader({ className, ...props }: React.ComponentProps<"thead">): React.JSX.Element;
 declare function TableBody({ className, ...props }: React.ComponentProps<"tbody">): React.JSX.Element;
 declare function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">): React.JSX.Element;

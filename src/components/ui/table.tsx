@@ -3,7 +3,14 @@
 import * as React from "react"
 import { cn } from "cn"
 
-function Table({ className, ...props }: React.ComponentProps<"table">) {
+function Table({
+  className,
+  stickyFirstColumn = false,
+  ...props
+}: React.ComponentProps<"table"> & {
+  /** Keeps the first column in view while the table scrolls sideways (sets `data-sticky-first`). */
+  stickyFirstColumn?: boolean
+}) {
   return (
     <div
       data-slot="table-container"
@@ -11,6 +18,7 @@ function Table({ className, ...props }: React.ComponentProps<"table">) {
     >
       <table
         data-slot="table"
+        data-sticky-first={stickyFirstColumn || undefined}
         className={cn(
           "w-full caption-bottom type-table tabular-nums",
           className

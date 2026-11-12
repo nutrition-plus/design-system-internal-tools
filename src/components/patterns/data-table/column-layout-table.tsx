@@ -38,6 +38,8 @@ type Props<T> = {
   /** Left side of the row above the table (the "คอลัมน์" controls sit on the right). */
   toolbar?: ReactNode
   className?: string
+  /** Keeps the first column in view while the table scrolls sideways. */
+  stickyFirstColumn?: boolean
 }
 
 const ALIGN = { left: "", right: "text-right", center: "text-center" } as const
@@ -50,6 +52,7 @@ function ColumnLayoutTable<T>({
   caption,
   toolbar,
   className,
+  stickyFirstColumn,
 }: Props<T>) {
   const pinStart = columns.filter((c) => c.pin === "start").map((c) => c.id)
   const pinEnd = columns.filter((c) => c.pin === "end").map((c) => c.id)
@@ -71,7 +74,7 @@ function ColumnLayoutTable<T>({
         <div>{toolbar}</div>
         <ColumnLayoutControls layout={layout} items={items} />
       </div>
-      <Table {...tableProps(sizing)}>
+      <Table {...tableProps(sizing)} stickyFirstColumn={stickyFirstColumn}>
         {caption && <caption className="sr-only">{caption}</caption>}
         <LayoutColGroup ids={ids} sizing={sizing} />
         <TableHeader>

@@ -11,6 +11,8 @@ type Props<T> = {
     /** Left side of the row above the table (the "คอลัมน์" controls sit on the right). */
     toolbar?: ReactNode;
     className?: string;
+    /** Keeps the first column in view while the table scrolls sideways. */
+    stickyFirstColumn?: boolean;
 };
-declare function ColumnLayoutTable<T>({ tableId, columns, rows, rowKey, caption, toolbar, className, }: Props<T>): import("react").JSX.Element;
+declare function ColumnLayoutTable<T>({ tableId, columns, rows, rowKey, caption, toolbar, className, stickyFirstColumn, }: Props<T>): import("react").JSX.Element;
 export { ColumnLayoutTable };

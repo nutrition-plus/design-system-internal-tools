@@ -32,6 +32,8 @@ type DataTableProps<TData extends RowData> = {
   /** Row tap → detail. Clicks on buttons, links and checkboxes inside the row are ignored. */
   onRowClick?: (row: Row<DataTableFeatures, TData>) => void
   className?: string
+  /** Keeps the first column in view while the table scrolls sideways. */
+  stickyFirstColumn?: boolean
 }
 
 const INTERACTIVE = "button, a, input, label, [role=checkbox], [role=menuitem]"
@@ -45,6 +47,7 @@ function DataTable<TData extends RowData>({
   loadingRows = 10,
   onRowClick,
   className,
+  stickyFirstColumn,
 }: DataTableProps<TData>) {
   const columns = table.getVisibleLeafColumns()
   const rows = table.getRowModel().rows
@@ -54,7 +57,10 @@ function DataTable<TData extends RowData>({
       data-slot="data-table"
       className={cn("overflow-hidden rounded-xl border border-border bg-card", className)}
     >
-      <Table aria-busy={status === "loading"}>
+      <Table
+        aria-busy={status === "loading"}
+        stickyFirstColumn={stickyFirstColumn}
+      >
         <caption className="sr-only">{caption}</caption>
         <TableHeader className="sticky top-0 z-10">
           {table.getHeaderGroups().map((group) => (

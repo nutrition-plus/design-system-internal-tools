@@ -98,7 +98,7 @@
  * Opt-in sticky first column: <Table data-sticky-first> keeps the first column in view while the table scrolls
  * sideways. Tables without the attribute are not changed. Rows get a solid background so the cells that scroll under
  * the sticky one do not show through; hover and selected utilities still win (layered), and the sticky cell follows
- * the row colour with `inherit`. Unlayered so it beats the `:where(th)` rule above. The table is also made as wide as
+ * the row colour with `inherit`. The position rule is unlayered so it beats the `:where(th)` rule above. The table is also made as wide as
  * its content (min-width: max-content, no wrapping) so it scrolls sideways instead of squeezing the columns.
  */
 @layer base {
@@ -131,13 +131,20 @@
   position: sticky;
   left: 0;
   z-index: 1;
-  background-color: inherit;
 }
-[data-slot="table"][data-sticky-first]
-  [data-slot="table-header"]
-  > [data-slot="table-row"]
-  > :first-child {
-  background-color: var(--secondary);
+/* The colours of the sticky cells are in the base layer, so an app rule (for example a tint on the cell being edited)
+   can still change them. The body cell follows its row; the heading cell is solid, because the heading row itself is
+   transparent and the cells that scroll under it must not show through. */
+@layer base {
+  [data-slot="table"][data-sticky-first] [data-slot="table-row"] > :first-child {
+    background-color: inherit;
+  }
+  [data-slot="table"][data-sticky-first]
+    [data-slot="table-header"]
+    > [data-slot="table-row"]
+    > :first-child {
+    background-color: var(--secondary);
+  }
 }
 
 /*

@@ -16,6 +16,8 @@ type DataTableProps<TData extends RowData> = {
     /** Row tap → detail. Clicks on buttons, links and checkboxes inside the row are ignored. */
     onRowClick?: (row: Row<DataTableFeatures, TData>) => void;
     className?: string;
+    /** Keeps the first column in view while the table scrolls sideways. */
+    stickyFirstColumn?: boolean;
 };
-declare function DataTable<TData extends RowData>({ table, caption, status, empty, error, loadingRows, onRowClick, className, }: DataTableProps<TData>): React.JSX.Element;
+declare function DataTable<TData extends RowData>({ table, caption, status, empty, error, loadingRows, onRowClick, className, stickyFirstColumn, }: DataTableProps<TData>): React.JSX.Element;
 export { DataTable };

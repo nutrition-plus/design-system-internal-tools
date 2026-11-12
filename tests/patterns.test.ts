@@ -6,7 +6,10 @@ import {
   resolveEmptyText,
   searchComboboxOptions,
 } from "../src/components/patterns/combobox-search"
+import { conflictShowsYours } from "../src/components/patterns/conflict-rows"
 import {
+  kpiBarSpec,
+  kpiValueSizeClass,
   statBadgeVariant,
   statBarClass,
   statDeltaTone,
@@ -106,5 +109,52 @@ describe("statDeltaTone", () => {
   test("goodWhen down flips the colours", () => {
     expect(statDeltaTone("down", "down")).toBe("success")
     expect(statDeltaTone("up", "down")).toBe("danger")
+  })
+})
+
+describe("kpiBarSpec", () => {
+  test("nothing when neither bar nor barColor is given", () => {
+    expect(kpiBarSpec()).toBeUndefined()
+  })
+  test("a tone gives a class", () => {
+    expect(kpiBarSpec("success")).toEqual({ className: "bg-success" })
+  })
+  test("a custom colour gives an inline style", () => {
+    expect(kpiBarSpec(undefined, "var(--chart-2)")).toEqual({
+      style: { backgroundColor: "var(--chart-2)" },
+    })
+  })
+  test("a custom colour wins over a tone", () => {
+    expect(kpiBarSpec("danger", "#123456")).toEqual({
+      style: { backgroundColor: "#123456" },
+    })
+  })
+  test("an empty colour falls back to the tone", () => {
+    expect(kpiBarSpec("info", "")).toEqual({ className: "bg-info" })
+  })
+})
+
+describe("kpiValueSizeClass", () => {
+  test("default keeps the old size, lg is one step larger", () => {
+    expect(kpiValueSizeClass()).toBe("text-3xl sm:text-4xl")
+    expect(kpiValueSizeClass("lg")).toBe("text-4xl sm:text-5xl")
+  })
+})
+
+describe("conflictShowsYours", () => {
+  test("no rows or rows without yours: one value column", () => {
+    expect(conflictShowsYours([])).toBe(false)
+    expect(conflictShowsYours([{ label: "a", value: "1" }])).toBe(false)
+  })
+  test("any row with yours shows both columns", () => {
+    expect(
+      conflictShowsYours([
+        { label: "a", value: "1" },
+        { label: "b", value: "2", yours: "3" },
+      ])
+    ).toBe(true)
+    expect(conflictShowsYours([{ label: "a", value: "1", yours: "" }])).toBe(
+      true
+    )
   })
 })

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.7.8 — 2026-11-12
+
+### Added
+- `KpiCard`: `barColor` (the 4px top bar in any CSS colour, for example `var(--chart-2)`; wins over `bar`), `pillPlacement` (`below` default, or `inline` to put the pill next to the big number), `linkPlacement` (`line` default, or `card` to make the whole card the link, with a hover fill and `linkLabel` or `label` as its accessible name), `linkComponent` (draw the link with the router's `Link`) and `size` (`default` or `lg` for the big number). Pure helpers `kpiBarSpec` and `kpiValueSizeClass` are exported too.
+- `stickyFirstColumn` prop on `Table`, `DataTable`, `ColumnLayoutTable` and `ColumnLayoutDataTable`. It sets `data-sticky-first` (the opt-in of 0.7.0).
+- `ConflictDialog`: a version-conflict dialog with `title`, `description`, `detail`, a list of `rows` (`label`, `value`, optional `yours`), `onReload` and overridable Thai texts. Pure helper `conflictShowsYours` is exported too.
+- `NoPermission` (a "you may not open this" panel with an optional `action`) and `PermissionGate` (`allowed`, `fallback`, children). They hide UI only; the server must still check.
+
+### Changed
+- Sticky first column CSS: the background of the sticky cells (body cell follows its row, heading cell is the solid header tint) moved into the `base` layer, so an app rule such as a tint on the cell being edited can override it. Tables without `data-sticky-first` are not changed.
+
 ## 0.7.5 — 2026-11-12
 
 ### Added

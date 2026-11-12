@@ -11,8 +11,10 @@ type Props<TData extends RowData> = {
     empty?: ReactNode;
     onRowClick?: (row: Row<DataTableFeatures, TData>) => void;
     className?: string;
+    /** Keeps the first column in view while the table scrolls sideways. */
+    stickyFirstColumn?: boolean;
 };
-declare function ColumnLayoutDataTable<TData extends RowData>({ table, layout, caption, empty, onRowClick, className, }: Props<TData>): import("react").JSX.Element;
+declare function ColumnLayoutDataTable<TData extends RowData>({ table, layout, caption, empty, onRowClick, className, stickyFirstColumn, }: Props<TData>): import("react").JSX.Element;
 /** The shown, movable columns of a table in their current order, for the "คอลัมน์" list. */
 declare function arrangeItems<TData extends RowData>(table: ReactTable<DataTableFeatures, TData, any>, layout: ColumnLayoutApi): ArrangeItem[];
 export { ColumnLayoutDataTable, arrangeItems };

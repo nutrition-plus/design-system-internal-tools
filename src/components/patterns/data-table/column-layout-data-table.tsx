@@ -45,6 +45,8 @@ type Props<TData extends RowData> = {
   empty?: ReactNode
   onRowClick?: (row: Row<DataTableFeatures, TData>) => void
   className?: string
+  /** Keeps the first column in view while the table scrolls sideways. */
+  stickyFirstColumn?: boolean
 }
 
 function ColumnLayoutDataTable<TData extends RowData>({
@@ -54,6 +56,7 @@ function ColumnLayoutDataTable<TData extends RowData>({
   empty,
   onRowClick,
   className,
+  stickyFirstColumn,
 }: Props<TData>) {
   const columns = table.getVisibleLeafColumns()
   const ids = columns.map((c) => c.id)
@@ -69,7 +72,7 @@ function ColumnLayoutDataTable<TData extends RowData>({
         className
       )}
     >
-      <Table {...tableProps(sizing)}>
+      <Table {...tableProps(sizing)} stickyFirstColumn={stickyFirstColumn}>
         <caption className="sr-only">{caption}</caption>
         <LayoutColGroup ids={ids} sizing={sizing} />
         <TableHeader className="sticky top-0 z-10">

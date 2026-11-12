@@ -61,5 +61,30 @@ function statDeltaTone(
   return direction === goodWhen ? "success" : "danger"
 }
 
-export { statBadgeVariant, statDeltaTone, statBarClass, statTextClass }
+/**
+ * How the 4px top bar of a KpiCard is drawn. A custom colour (`barColor`, any CSS colour such as `var(--chart-2)`)
+ * wins over the tone (`bar`). Returns nothing when neither is given.
+ */
+function kpiBarSpec(
+  bar?: StatTone,
+  barColor?: string
+): { className?: string; style?: { backgroundColor: string } } | undefined {
+  if (barColor) return { style: { backgroundColor: barColor } }
+  if (bar) return { className: statBarClass(bar) }
+  return undefined
+}
+
+/** Class of the big number of a KpiCard: `lg` is one step larger. */
+function kpiValueSizeClass(size: "default" | "lg" = "default"): string {
+  return size === "lg" ? "text-4xl sm:text-5xl" : "text-3xl sm:text-4xl"
+}
+
+export {
+  kpiBarSpec,
+  kpiValueSizeClass,
+  statBadgeVariant,
+  statDeltaTone,
+  statBarClass,
+  statTextClass,
+}
 export type { StatBadgeVariant, StatDirection, StatTone }
