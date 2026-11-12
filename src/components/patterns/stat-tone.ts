@@ -50,5 +50,16 @@ function statBarClass(tone: StatTone): string {
   }
 }
 
-export { statBadgeVariant, statBarClass, statTextClass }
-export type { StatBadgeVariant, StatTone }
+type StatDirection = "up" | "down" | "same"
+
+/** The tone of a change: neutral when same, success when it moved the good way, else danger. */
+function statDeltaTone(
+  direction: StatDirection,
+  goodWhen: "up" | "down" = "up"
+): StatTone {
+  if (direction === "same") return "neutral"
+  return direction === goodWhen ? "success" : "danger"
+}
+
+export { statBadgeVariant, statDeltaTone, statBarClass, statTextClass }
+export type { StatBadgeVariant, StatDirection, StatTone }

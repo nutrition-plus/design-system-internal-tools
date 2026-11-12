@@ -27,5 +27,28 @@ function canCreateFromText(
   )
 }
 
-export { canCreateFromText, filterComboboxOptions }
-export type { ComboboxOption }
+/** An app's own search: gets all options and the typed text, returns the options to show. */
+type ComboboxSearch = (
+  options: ComboboxOption[],
+  text: string
+) => ComboboxOption[]
+
+/** The options to show: the app's own `search` when given, else "label contains the typed text". */
+function searchComboboxOptions(
+  options: readonly ComboboxOption[],
+  text: string,
+  search?: ComboboxSearch
+): ComboboxOption[] {
+  return search ? search([...options], text) : filterComboboxOptions(options, text)
+}
+
+/** The "nothing found" text: a fixed string, or a function of the typed text. */
+function resolveEmptyText(
+  emptyText: string | ((text: string) => string),
+  text: string
+): string {
+  return typeof emptyText === "function" ? emptyText(text) : emptyText
+}
+
+export { canCreateFromText, filterComboboxOptions, resolveEmptyText, searchComboboxOptions }
+export type { ComboboxOption, ComboboxSearch }
